@@ -12,7 +12,7 @@ export async function POST(request) {
     return sendError(400, "Email and password are required");
 
   try {
-    const user = await prisma.user.findmany({ where: { email } });
+    const user = await prisma.user.findMany({ where: { email } });
     if (!user) return sendError(400, "Invalid credentials");
 
     const isMatch = await bcrypt.compare(password, user.password);
