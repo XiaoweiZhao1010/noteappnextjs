@@ -8,20 +8,19 @@ export async function POST(request) {
   if (!body) return sendError(400, "Invalid JSON body");
 
   const { email, password } = body;
-  if (!email || !password) return sendError(400, "Email and password are required");
+  if (!email || !password)
+    return sendError(400, "Email and password are required");
 
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findmany({ where: { email } });
     if (!user) return sendError(400, "Invalid credentials");
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return sendError(400, "Invalid credentials");
 
-    const token = jwt.sign(
-      { userId: user.id },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
     return Response.json({ token });
   } catch (err) {
@@ -29,4 +28,3 @@ export async function POST(request) {
     return sendError();
   }
 }
-
